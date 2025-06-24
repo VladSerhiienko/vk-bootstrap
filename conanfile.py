@@ -18,12 +18,16 @@ class VkBootstrapConan(ConanFile):
         "fPIC": [True, False],
         "test": [True, False],
         "werror": [True, False],
+        "disable_warnings": [True, False],
+        "install": [True, False],
     }
     default_options = {
         "shared": False,
         "fPIC": True,
         "test": False,
         "werror": False,
+        "disable_warnings": False,
+        "install": False,
     }
    
     def build(self):
@@ -39,10 +43,12 @@ class VkBootstrapConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
+        tc.variables["BUILD_SHARED_LIBS"] = self.options.shared
+        tc.variables["VK_BOOTSTRAP_INSTALL"] = self.options.install
         tc.variables["VK_BOOTSTRAP_TEST"] = self.options.test
         tc.variables["VK_BOOTSTRAP_WERROR"] = self.options.werror
+        tc.variables["VK_BOOTSTRAP_DISABLE_WARNINGS"] = self.options.disable_warnings
         tc.variables["VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
-        tc.variables["BUILD_SHARED_LIBS"] = self.options.shared
         tc.generate()
         deps = CMakeDeps(self)
         deps.generate()

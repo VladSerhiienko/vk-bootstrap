@@ -9,9 +9,16 @@ project(VulkanBootstrap
 
 option(VK_BOOTSTRAP_DISABLE_WARNINGS "Disable warnings during compilation" OFF)
 option(VK_BOOTSTRAP_WERROR "Enable warnings as errors during compilation" OFF)
-
 option(VK_BOOTSTRAP_TEST "Test Vk-Bootstrap using Catch2 as well as build examples" ${PROJECT_IS_TOP_LEVEL})
 option(VK_BOOTSTRAP_INSTALL "Enable installing of vk-bootstrap" ${PROJECT_IS_TOP_LEVEL})
+option(VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE "Default value is the value of BUILD_SHARED_LIBS" ${BUILD_SHARED_LIBS})
+
+message(STATUS "BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}")
+message(STATUS "VK_BOOTSTRAP_DISABLE_WARNINGS=${VK_BOOTSTRAP_DISABLE_WARNINGS}")
+message(STATUS "VK_BOOTSTRAP_WERROR=${VK_BOOTSTRAP_WERROR}")
+message(STATUS "VK_BOOTSTRAP_TEST=${VK_BOOTSTRAP_TEST}")
+message(STATUS "VK_BOOTSTRAP_INSTALL=${VK_BOOTSTRAP_INSTALL}")
+message(STATUS "VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE=${VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE}")
 
 set(VK_BOOTSTRAP_VULKAN_HEADER_DIR "" CACHE FILEPATH "Specify the location of the Vulkan-Headers include directory.")
 mark_as_advanced(VK_BOOTSTRAP_VULKAN_HEADER_DIR)
@@ -93,7 +100,6 @@ target_link_libraries(vk-bootstrap
         ${CMAKE_DL_LIBS})
 target_compile_features(vk-bootstrap PUBLIC cxx_std_17)
 
-option(VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE "Default value is the value of BUILD_SHARED_LIBS" ${BUILD_SHARED_LIBS})
 set_target_properties(vk-bootstrap PROPERTIES POSITION_INDEPENDENT_CODE ${VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE})
 
 if(VK_BOOTSTRAP_TEST)
