@@ -54,6 +54,9 @@ class VkBootstrapConan(ConanFile):
     def requirements(self):
         self.requires(f"vulkan-headers/{self.version}")
 
+    def build_requirements(self):
+        self.tool_requires("cmake/4.0.3")
+
     def package(self):
         # self.output.info(f"source_folder: {self.source_folder}")
         # self.output.info(f"build_folder: {self.build_folder}")
