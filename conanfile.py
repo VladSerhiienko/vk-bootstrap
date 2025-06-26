@@ -14,7 +14,7 @@ class VkBootstrapConan(ConanFile):
 
     settings = "os", "compiler", "build_type", "arch"
     generators = "CMakeToolchain", "CMakeDeps"
-    exports_sources = "CMakeLists.txt", "*.h", "*.cpp", "LICENSE.txt"
+    exports_sources = "CMakeLists.txt", "src/*", "LICENSE.txt"
 
     options = {
         "shared": [True, False],
@@ -32,6 +32,15 @@ class VkBootstrapConan(ConanFile):
         "disable_warnings": False,
         "install": True,
     }
+
+    def requirements(self):
+        self.requires(f"vulkan-headers/{self.version}")
+
+    def build_requirements(self):
+        self.tool_requires("cmake/4.0.3")
+
+    def layout(self):
+        cmake_layout(self)
    
     def build(self):
         cmake = CMake(self)
@@ -46,23 +55,11 @@ class VkBootstrapConan(ConanFile):
             }
         )
         cmake.build()
-        cmake.install()
-
-    def layout(self):
-        cmake_layout(self)
-
-    def requirements(self):
-        self.requires(f"vulkan-headers/{self.version}")
-
-    def build_requirements(self):
-        self.tool_requires("cmake/4.0.3")
 
     def package(self):
-        # self.output.info(f"source_folder: {self.source_folder}")
-        # self.output.info(f"build_folder: {self.build_folder}")
-        # self.output.info(f"package_folder: {self.package_folder}")
         copy(self, "LICENSE", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
-        copy(self, pattern="*.h", src=self.source_folder, dst=os.path.join(self.package_folder, "include"))
+        copy(self, pattern="*.h", src=self.source_folder + "/src", dst=os.path.join(self.package_folder, "include"))
+        copy(self, pattern="*.hpp", src=self.source_folder + "/src", dst=os.path.join(self.package_folder, "include"))
         copy(self, pattern="*.a", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
         copy(self, pattern="*.so", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
         copy(self, pattern="*.lib", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
@@ -70,7 +67,6 @@ class VkBootstrapConan(ConanFile):
         copy(self, pattern="*.dylib", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
 
     def package_info(self):
+        self.cpp_info.libs = ["vk-bootstrap"]
         self.cpp_info.includedirs = ["include"]
         self.cpp_info.libdirs = ["lib"]
-        self.cpp_info.bindirs = ["bin"]
-        self.cpp_info.libs = ["vk-bootstrap"]

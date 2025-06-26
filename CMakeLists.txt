@@ -15,6 +15,8 @@ message(STATUS "VK_BOOTSTRAP_TEST=${VK_BOOTSTRAP_TEST}")
 message(STATUS "VK_BOOTSTRAP_INSTALL=${VK_BOOTSTRAP_INSTALL}")
 message(STATUS "VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE=${VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE}")
 
+find_package(VulkanHeaders CONFIG)
+
 set(vk-bootstrap-library-type STATIC)
 if(BUILD_SHARED_LIBS)
     set(vk-bootstrap-library-type SHARED)
@@ -25,49 +27,45 @@ add_library(
     ${vk-bootstrap-library-type}
         src/VkBootstrap.cpp
         src/VkBootstrap.h
-        src/VkBootstrapDispatch.h)
+        src/VkBootstrapDispatch.h
+        )
+
+target_compile_features(vk-bootstrap PUBLIC cxx_std_17)
 
 target_include_directories(
     vk-bootstrap
     PUBLIC
-        include)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:include>
+        )
 
-find_package(VulkanHeaders CONFIG)
 target_link_libraries(
     vk-bootstrap
         PUBLIC
             Vulkan::Headers
         PRIVATE
-            vk-bootstrap-compiler-warnings
             ${CMAKE_DL_LIBS})
 
-target_compile_features(
-    vk-bootstrap
-    PUBLIC
-        cxx_std_17)
 
 set_target_properties(
     vk-bootstrap
     PROPERTIES
         POSITION_INDEPENDENT_CODE ${VK_BOOTSTRAP_POSITION_INDEPENDENT_CODE})
 
+# Installation rules
 include(GNUInstallDirs)
-message(STATUS "CMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_INCLUDEDIR}")
 
-install(
-    FILES
-        src/VkBootstrap.h
-        src/VkBootstrapDispatch.h
-    DESTINATION
-        ${CMAKE_INSTALL_INCLUDEDIR})
-
+# Install the library archive
 install(
     TARGETS vk-bootstrap
-    EXPORT vk-bootstrap-targets
+    EXPORT vk-bootstrap-config
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
+
+# Install header files
 install(
-    EXPORT vk-bootstrap-targets
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/vk-bootstrap
-    NAMESPACE vk-bootstrap::
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h"
     )
