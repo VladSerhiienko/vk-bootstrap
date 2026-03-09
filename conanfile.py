@@ -5,7 +5,7 @@ from conan.tools.files import copy
 
 class VkBootstrapConan(ConanFile):
     name = "vk-bootstrap"
-    version = "1.4.344"
+    version = "1.4.344-pre"
     description = "Vulkan bootstraping library."
     license = "MIT"
     topics = ("vulkan", "bootstrap", "setup")
@@ -34,7 +34,7 @@ class VkBootstrapConan(ConanFile):
     }
 
     def requirements(self):
-        self.requires("vulkan-headers/1.4.344")
+        self.requires("vulkan-headers/1.4.313.0")
 
     def build_requirements(self):
         self.tool_requires("cmake/4.0.3")
