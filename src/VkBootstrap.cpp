@@ -259,7 +259,9 @@ class VulkanFunctions {
 
     void init_instance_funcs(VkInstance inst) {
         std::lock_guard<std::mutex> lg(instance_functions_mutex);
-        if (instance_functions_initialized) return;
+        // Instance entry points can belong to a layer that was unloaded when
+        // an earlier instance was destroyed (notably validation on Android).
+        // Refresh them for each newly created instance, under the same lock.
         instance = inst;
         get_inst_proc_addr(fp_vkDestroyInstance, "vkDestroyInstance");
         get_inst_proc_addr(fp_vkCreateDebugUtilsMessengerEXT, "vkCreateDebugUtilsMessengerEXT");
